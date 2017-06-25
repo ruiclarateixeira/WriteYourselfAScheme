@@ -6,5 +6,7 @@ import SimpleParser hiding (main)
 main :: IO ()
 main = hspec $ do
   describe "readExpr" $ do
-    it "Escaped quotes are recognized" $
-      readExpr "\"" `shouldBe` "Found Value"
+    it "Recognizes numbers" $
+        readExpr "123" `shouldBe` "Found value"
+    it "Recognizes escaped qutotes" $
+        readExpr "\"\\\"\"" `shouldBe` "Found value"

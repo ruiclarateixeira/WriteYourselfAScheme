@@ -14,10 +14,16 @@ data LispVal = Atom String
 symbol :: Parser Char
 symbol = oneOf "!#$%&|*+-/:<=>?@^_~"
 
+escapeChar :: Parser Char
+escapeChar = do
+                char '\\'
+                char '"' 
+                return '"'
+
 parseString :: Parser LispVal
 parseString = do
                 char '"'
-                x <- many (noneOf "\"")
+                x <- many (escapeChar <|> (noneOf ['\\', '"']))
                 char '"'
                 return $ String x
 
@@ -32,7 +38,9 @@ parseAtom = do
                          _    -> Atom atom
 
 parseNumber :: Parser LispVal
-parseNumber = liftM (Number . read) $ many1 digit
+parseNumber = do              
+                x <- many1 digit              
+                return $ (Number . read) $ x
 
 parseExpr :: Parser LispVal
 parseExpr = parseAtom
